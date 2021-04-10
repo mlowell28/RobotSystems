@@ -1,5 +1,11 @@
 from ezblock import *
+from ezblock import __reset_mcu__
+
 import time
+import atexit
+
+__reset_mcu__()
+time.sleep(0.01)
 
 PERIOD = 4095
 PRESCALER = 10
@@ -148,9 +154,10 @@ def Get_distance():
     return cm
      
 def test():
-    # dir_servo_angle_calibration(-10) 
-    set_dir_servo_angle(-40)
-    # time.sleep(1)
+   # set_dir_servo_angle(0)
+    #time.sleep(1)
+    forward(50)
+    time.sleep(1)
     # set_dir_servo_angle(0)
     # time.sleep(1)
     # set_motor_speed(1, 1)
@@ -158,10 +165,13 @@ def test():
     # camera_servo_pin.angle(0)
 
 
-# if __name__ == "__main__":
-#     try:
-#         # dir_servo_angle_calibration(-10) 
-#         while 1:
-#             test()
-#     finally: 
-#         stop()
+if __name__ == "__main__":
+    atexit.register(stop)
+    __reset_mcu__()
+    time.sleep(0.01)
+    dir_servo_angle_calibration(-10)
+    time.sleep(.1) 
+    while 1:
+        test()
+        time.sleep(1)
+

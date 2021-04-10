@@ -1,14 +1,17 @@
-try:
-	from ezblock import *
-except ImportError:
-	print("This computer does not appear to be a PiCar-X system (/opt/ezblock is not present). Shadowing hardware calls with substitute functions")
-	from sim_ezblock import *
-
 import time
 from math import *
 import logging
 from logdecorator import  log_on_start , log_on_end , log_on_error
 import atexit
+
+try:
+    from ezblock import*
+    from ezblock import __reset_mcu__
+    __reset_mcu__()
+    time.sleep(0.01)
+except ImportError:
+    print("This computer does not appear to be a PiCar-X system(/opt/ezblock is not present). Shadowing hardware calls with substitute functions")
+    from sim_ezblock import *
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format , level=logging.INFO ,datefmt ="%H:%M:%S")
@@ -33,14 +36,14 @@ S1 = ADC('A1')
 S2 = ADC('A2')
 
 Servo_dir_flag = 1
-dir_cal_value = 0
+dir_cal_value = -5.5
 cam_cal_value_1 = 0
 cam_cal_value_2 = 0
 motor_direction_pins = [left_rear_dir_pin, right_rear_dir_pin]
 motor_speed_pins = [left_rear_pwm_pin, right_rear_pwm_pin]
 cali_dir_value = [1, -1]
 cali_speed_value = [0, 0]
-#初始化PWM引脚
+
 for pin in motor_speed_pins:
     pin.period(PERIOD)
     pin.prescaler(PRESCALER)
@@ -178,7 +181,7 @@ def backward(speed):
 
     logging.debug('set motor speed backward %f with angle %f' , speed, steering_angle)
 
-    if steering_angle < 0:
+    if steering_angle > 0:
         # left motor moves slower than right motor
         left_motor_speed = speed*(wheel_length/tan(abs(steering_angle)))/(wheel_length/tan(abs(steering_angle)) + half_wheel_width)
         right_motor_speed = speed*(wheel_length/tan(abs(steering_angle)) + half_wheel_width)/(wheel_length/tan(abs(steering_angle)))
@@ -189,7 +192,7 @@ def backward(speed):
             right_motor_speed = scale*right_motor_speed
             left_motor_speed = scale*left_motor_speed 
             
-    elif steering_angle > 0:
+    elif steering_angle < 0:
 
         # right motor moves slower than left
         right_motor_speed = speed*(wheel_length/tan(abs(steering_angle)))/(wheel_length/tan(abs(steering_angle)) + half_wheel_width)
@@ -201,11 +204,13 @@ def backward(speed):
             right_motor_speed = scale*right_motor_speed
             left_motor_speed = scale*left_motor_speed 
     else:
-        right_motor_speed = 0
-        left_motor_speed = 0
-
-    set_motor_speed(1, right_motor_speed)
-    set_motor_speed(2, left_motor_speed)
+        if speed >100:
+            speed = 100
+        right_motor_speed = -1*speed
+        left_motor_speed = -1*speed
+        
+    set_motor_speed(1, -1*right_motor_speed)
+    set_motor_speed(2, -1*left_motor_speed)
 
 @log_on_start(logging.DEBUG , "forward, speed value: {speed:f}")
 @log_on_error(logging.DEBUG , "forward error")
@@ -218,7 +223,7 @@ def forward(speed):
 
     logging.debug("set motor speed forward %f with angle %f", speed, steering_angle)
 
-    if steering_angle < 0:
+    if steering_angle > 0:
         # left motor moves slower than right motor
         left_motor_speed = speed*(wheel_length/tan(abs(steering_angle)))/(wheel_length/tan(abs(steering_angle)) + half_wheel_width)
         right_motor_speed = speed*(wheel_length/tan(abs(steering_angle)) + half_wheel_width)/(wheel_length/tan(abs(steering_angle)))
@@ -229,7 +234,7 @@ def forward(speed):
             right_motor_speed = scale*right_motor_speed
             left_motor_speed = scale*left_motor_speed 
             
-    elif steering_angle > 0:
+    elif steering_angle < 0:
 
         # right motor moves slower than left
         right_motor_speed = speed*(wheel_length/tan(abs(steering_angle)))/(wheel_length/tan(abs(steering_angle)) + half_wheel_width)
@@ -241,11 +246,13 @@ def forward(speed):
             right_motor_speed = scale*right_motor_speed
             left_motor_speed = scale*left_motor_speed 
     else:
-        right_motor_speed = 0
-        left_motor_speed = 0
+        if speed > 100:
+            speed = 100
+        right_motor_speed = -1*speed
+        left_motor_speed = -1*speed
 
-    set_motor_speed(1, -1*right_motor_speed)
-    set_motor_speed(2, -1*left_motor_speed)
+    set_motor_speed(1, right_motor_speed)
+    set_motor_speed(2, left_motor_speed)
 
 
 @log_on_start(logging.DEBUG , "stop")
@@ -287,24 +294,17 @@ def Get_distance():
     return cm
      
 def test():
-    dir_servo_angle_calibration(-10) 
-    set_dir_servo_angle(-40)
-    time.sleep(1)
     set_dir_servo_angle(0)
-    time.sleep(1)
-    set_motor_speed(1, 1)
-    set_motor_speed(2, 1)
+    forward(100)
+    time.sleep(2)
+    set_dir_servo_angle(20)
+    time.sleep(2)
     camera_servo_pin1.angle(0)
     print('test past')
 
+#force stop function to run at exit of script which includes picarx_improved
 atexit.register(stop)
 
 if __name__ == "__main__":
-        try:
-            dir_servo_angle_calibration(-10) 
-            
-            while 1:
-                test()
-
-        finally: 
-            stop()
+    while(1):
+        test()
