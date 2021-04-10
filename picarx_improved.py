@@ -181,7 +181,7 @@ def backward(speed):
 
     logging.debug('set motor speed backward %f with angle %f' , speed, steering_angle)
 
-    if steering_angle > 0:
+    if steering_angle < 0:
         # left motor moves slower than right motor
         left_motor_speed = speed*(wheel_length/tan(abs(steering_angle)))/(wheel_length/tan(abs(steering_angle)) + half_wheel_width)
         right_motor_speed = speed*(wheel_length/tan(abs(steering_angle)) + half_wheel_width)/(wheel_length/tan(abs(steering_angle)))
@@ -192,7 +192,7 @@ def backward(speed):
             right_motor_speed = scale*right_motor_speed
             left_motor_speed = scale*left_motor_speed 
             
-    elif steering_angle < 0:
+    elif steering_angle > 0:
 
         # right motor moves slower than left
         right_motor_speed = speed*(wheel_length/tan(abs(steering_angle)))/(wheel_length/tan(abs(steering_angle)) + half_wheel_width)
@@ -223,7 +223,7 @@ def forward(speed):
 
     logging.debug("set motor speed forward %f with angle %f", speed, steering_angle)
 
-    if steering_angle > 0:
+    if steering_angle < 0:
         # left motor moves slower than right motor
         left_motor_speed = speed*(wheel_length/tan(abs(steering_angle)))/(wheel_length/tan(abs(steering_angle)) + half_wheel_width)
         right_motor_speed = speed*(wheel_length/tan(abs(steering_angle)) + half_wheel_width)/(wheel_length/tan(abs(steering_angle)))
@@ -234,7 +234,7 @@ def forward(speed):
             right_motor_speed = scale*right_motor_speed
             left_motor_speed = scale*left_motor_speed 
             
-    elif steering_angle < 0:
+    elif steering_angle > 0:
 
         # right motor moves slower than left
         right_motor_speed = speed*(wheel_length/tan(abs(steering_angle)))/(wheel_length/tan(abs(steering_angle)) + half_wheel_width)
