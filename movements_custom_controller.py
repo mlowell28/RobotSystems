@@ -70,6 +70,9 @@ options = ["1","2","3","4","5"]
 
 my_controller = MotorController()
 
+left_encoder = Motor_Encoder("D2")
+right_encoder = Motor_Encoder("D3")
+
 while(done == False):
     print("Please enter 1 random movement, 2 for parallel parking right, 3 for parallel parking left, 4 for Three-Point-Turn or 5 for exit")
     inputstring = input()
