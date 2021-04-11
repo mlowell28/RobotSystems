@@ -97,7 +97,7 @@ class MotorController:
      def dir_servo_angle_calibration(self, value):
           logging.debug('dir servo angle calibration: %s', value)
           self.dir_cal_value = value
-          self.set_dir_servo_angle(dir_cal_value)
+          self.set_dir_servo_angle(self.dir_cal_value)
           # dir_servo_pin.angle(dir_cal_value)
 
      @log_on_start(logging.DEBUG , "set_dir_servo_angle, value: {value:f}")
