@@ -4,6 +4,9 @@ import logging
 from logdecorator import log_on_start, log_on_end, log_on_error
 import atexit 
 
+from .basic import _Basic_class
+import RPi.GPIO as GPIO
+
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format , level=logging.INFO ,datefmt ="%H:%M:%S")
 logging.getLogger ().setLevel(logging.DEBUG)
@@ -237,6 +240,49 @@ class MotorController:
           logging.debug('stopping motors')
           self.set_motor_speed(1, 0)
           self.set_motor_speed(2, 0)
+
+
+class Motor_Encoder:
+
+     def __init__(self, pin):
+          interrupt = IRQ(pin, GPIO.RISING, update_ticks)
+          interrupt.enable()
+          self.tick = 0
+          
+     def get_ticks(self):
+          return self.tick
+
+     def update_ticks(self):
+          self.tick += self.tick
+
+class IRQ(_Basic_class):
+    IRQ_FALLING = GPIO.FALLING
+    IRQ_RISING = GPIO.RISING
+    IRQ_RISING_FALLING = GPIO.BOTH
+
+    def __init__(self, pin, trigger, callback):
+        super().__init__()
+        self.pin = pin
+        self.trigger = trigger
+        self.callback = callback
+        self.pin.mode(self.pin.IN)
+        GPIO.add_event_detect(self.pin._pin, trigger, callback=callback)
+
+    def disable(self):
+        # Disable the interrupt associated with the ExtInt object. This could be useful for debouncing.
+        pass
+
+    def enable(self):
+        # Enable a disabled interrupt.
+        pass
+
+    def line(self):
+        # Return the line number that the pin is mapped to.
+        pass
+
+    def swint(self):
+        # Trigger the callback from software.
+        self.callback()
 
      def cleanup(self):
           self.stop()
