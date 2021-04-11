@@ -183,11 +183,11 @@ class MotorController:
           else:
                if speed >100:
                     speed = 100
-               right_motor_speed = -1*speed
-               left_motor_speed = -1*speed
+               right_motor_speed = speed
+               left_motor_speed = speed
                
-          self.set_motor_speed(1, -1*right_motor_speed)
-          self.set_motor_speed(2, -1*left_motor_speed)
+          self.set_motor_speed(1, right_motor_speed)
+          self.set_motor_speed(2, left_motor_speed)
 
      @log_on_start(logging.DEBUG , "forward, speed value: {speed:f}")
      @log_on_error(logging.DEBUG , "forward error")
@@ -223,11 +223,11 @@ class MotorController:
           else:
                if speed > 100:
                     speed = 100
-               right_motor_speed = -1*speed
-               left_motor_speed = -1*speed
+               right_motor_speed = speed
+               left_motor_speed = speed
 
-          self.set_motor_speed(1, right_motor_speed)
-          self.set_motor_speed(2, left_motor_speed)
+          self.set_motor_speed(1, -1*right_motor_speed)
+          self.set_motor_speed(2, -1*left_motor_speed)
 
 
      @log_on_start(logging.DEBUG , "stop")

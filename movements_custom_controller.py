@@ -14,6 +14,7 @@ def random_movement(controller):
     controller.forward(50)
     time.sleep(4)
     controller.stop()
+    print("done with random movement")
 
 def parallel_parking_left(controller):
     controller.set_dir_servo_angle(0)
