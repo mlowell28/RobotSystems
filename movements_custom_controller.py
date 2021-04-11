@@ -13,6 +13,7 @@ def random_movement(controller):
     controller.set_dir_servo_angle(-20)
     controller.forward(50)
     time.sleep(4)
+    controller.stop()
 
 def parallel_parking_left(controller):
     controller.set_dir_servo_angle(0)
