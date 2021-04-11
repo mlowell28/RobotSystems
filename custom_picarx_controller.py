@@ -3,11 +3,8 @@ from math import *
 import logging
 from logdecorator import log_on_start, log_on_end, log_on_error
 import atexit 
-
-from .basic import _Basic_class
-import RPi.GPIO as GPIO
-
 from ezblock import Pin
+import RPi.GPIO as GPIO
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format , level=logging.INFO ,datefmt ="%H:%M:%S")
@@ -247,20 +244,24 @@ class MotorController:
           self.stop()
 
 
-class Motor_Encoder:
+class Motor_Encoders:
 
-     def __init__(self, pin):
-          self.ticks = 0
-          self.encoder_pin = Pin(pin)
-          self.encoder_pin.irq(update_ticks, GPIO.BOTH, 1)
+     def __init__(self, left_pin, right_pin):
+          self.left_tick = 0
+          self.right_tick = 0
+          self.left_encoder_pin = Pin(left_pin)
+          self.right_encoder_pin = Pin(right_pin)
+          self.left_encoder_pin.irq(self.update_left_ticks, GPIO.BOTH, 1)
+          self.right_encoder_pin.irq(self.update_right_ticks, GPIO.BOTH,1)
 
      def get_ticks(self):
-          return self.tick
+          return [self.left_tick, self.right_tick]
 
-     def update_ticks(self):
-          self.tick += self.tick
-          print("Current ticks are :"+ str(self.tick))
-          
+     def update_left_ticks(self, channel):
+          self.left_tick = self.left_tick + 1
+
+     def update_right_ticks(self, channel):
+          self.right_tick = self.right_tick + 1
 
 
      

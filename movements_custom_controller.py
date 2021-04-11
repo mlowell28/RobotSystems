@@ -65,13 +65,28 @@ def three_point_turn(controller):
     controller.stop()
     time.sleep(10)
 
+def track_target_velocity():
+     [left_ticks, right_ticks] = Encoders.get_ticks()
+     current_time = time.time()
+     time.sleep(.2)
+     new_time = time.time()
+     [new_left_ticks, new_right_ticks] = Encoders.get_ticks()
+
+     delta_t = new_time - current_time;
+     d_tick_d_s = (new_left_ticks - left_ticks)/(new_time - current_time)
+     print("left motor tick speed " + str(d_tick_d_s))
+     print("new left tick " + str(new_left_ticks) + " old left tick " + str(left_ticks))
+     print("new right tick " + str(new_right_ticks) + " old right tick " + str(right_ticks))
+     
 done = False
 options = ["1","2","3","4","5"]
 
 my_controller = MotorController()
 
-left_encoder = Motor_Encoder("D2")
-right_encoder = Motor_Encoder("D3")
+Encoders = Motor_Encoders("D2", "D3")
+
+while(1):
+     track_target_velocity()
 
 while(done == False):
     print("Please enter 1 random movement, 2 for parallel parking right, 3 for parallel parking left, 4 for Three-Point-Turn or 5 for exit")
