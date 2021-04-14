@@ -15,20 +15,6 @@ adc_A1=ADC("A1")
 adc_A2=ADC("A2")
 
 
-def forever():
-  global my_3ch
-  my_3ch = [adc_A0.read(), adc_A1.read(), adc_A2.read()]
-  print("%s"%my_3ch)
-
-if __name__ == "__main__":
-    linesensor = LineSensor()
-    while True:
-        values = linesensor.read_values()
-        print(values)
-
-        time.sleep(1)
-        
-
 
 class LineSensor:
     def __init__(self, sensitivity = 1, follow_type = "light"):   
@@ -57,7 +43,17 @@ class LineSensor:
         return output
 
 
+        
+if __name__ == "__main__":
+    linesensor = LineSensor()
+    while True:
+        values = linesensor.read_values()
+        direction = linesnor.get_direction()
+        print("Values :" + str(values))
+        print("Direction :" + str(direction))
+        time.sleep(1)
 
+    
         
 
         
