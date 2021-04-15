@@ -20,7 +20,7 @@ class LineSensor:
     def __init__(self, sensitivity = 1, follow_type = "light"):   
 
         self.sensitivity = sensitivity
-        self.polarity = polarity
+        self.polarity = follow_type
         self.sensor_values = [0,0,0]
 
     def read_values(self):
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     linesensor = LineSensor()
     while True:
         values = linesensor.read_values()
-        direction = linesnor.get_direction()
+        direction = linesensor.get_direction()
         print("Values :" + str(values))
         print("Direction :" + str(direction))
         time.sleep(1)
