@@ -31,28 +31,13 @@ class LineSensor:
     def get_saved_values(self):
         return self.sensor_values 
 
-    def get_direction(self):
-        sensor_values = self.read_values()
-        if self.polarity == "light":
-            output = self.sensitivity*(sensor_values[1]-sensor_values[0] - (sensor_values[1]-sensor_values[2]))
-        elif self.polarity == "dark":
-            output = -1*self.sensitivity*(sensor_values[1]-sensor_values[0] - (sensor_values[1]-sensor_values[2]))
-        
-        if abs(output) > 1:
-            output = output/abs(output)
-        return output
-
-
         
 if __name__ == "__main__":
     linesensor = LineSensor(.001)
     while True:
         values = linesensor.read_values()
-        direction = linesensor.get_direction()
         print("Values :" + str(values))
-        print("Direction :" + str(direction))
         time.sleep(.1)
-        set_dir_servo_angle(20*direction)
 
     
         
