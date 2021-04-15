@@ -7,7 +7,7 @@ __reset_mcu__()
 time.sleep(0.01)
 from ezblock import ADC
 from ezblock import print
-
+from picarx_improved import *
 my_3ch = None
 
 adc_A0=ADC("A0")
@@ -45,13 +45,14 @@ class LineSensor:
 
         
 if __name__ == "__main__":
-    linesensor = LineSensor()
+    linesensor = LineSensor(.001)
     while True:
         values = linesensor.read_values()
         direction = linesensor.get_direction()
         print("Values :" + str(values))
         print("Direction :" + str(direction))
-        time.sleep(1)
+        time.sleep(.1)
+        set_dir_servo_angle(20*direction)
 
     
         
