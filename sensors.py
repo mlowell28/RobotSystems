@@ -17,10 +17,8 @@ adc_A2=ADC("A2")
 
 
 class LineSensor:
-    def __init__(self, sensitivity = 1, follow_type = "light"):   
+    def __init__(self):   
 
-        self.sensitivity = sensitivity
-        self.polarity = follow_type
         self.sensor_values = [0,0,0]
 
     def read_values(self):
@@ -33,7 +31,7 @@ class LineSensor:
 
         
 if __name__ == "__main__":
-    linesensor = LineSensor(.001)
+    linesensor = LineSensor()
     while True:
         values = linesensor.read_values()
         print("Values :" + str(values))

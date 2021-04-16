@@ -41,7 +41,7 @@ class MotorController:
           self.cam_cal_value_2 = 0
           self.motor_direction_pins = [self.left_rear_dir_pin, self.right_rear_dir_pin]
           self.motor_speed_pins = [self.left_rear_pwm_pin, self.right_rear_pwm_pin]
-          self.cali_dir_value = [1, -1]
+          self.cali_dir_value = [-1, 1]
           self.cali_speed_value = [0, 0]
 
           for pin in self.motor_speed_pins:
@@ -162,8 +162,8 @@ class MotorController:
 
           if self.steering_angle < 0:
                # left motor moves slower than right motor
-               left_motor_speed = speed*(wheel_length/tan(abs(self.steering_angle)))/(wheel_length/tan(abs(self.steering_angle)) + half_wheel_width)
-               right_motor_speed = speed*(wheel_length/tan(abs(self.steering_angle)) + half_wheel_width)/(wheel_length/tan(abs(self.steering_angle)))
+               left_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(self.steering_angle)))/(wheel_length/tan(2*pi/360*abs(self.steering_angle)) + half_wheel_width)
+               right_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(self.steering_angle)) + half_wheel_width)/(wheel_length/tan(2*pi/360*abs(self.steering_angle)))
 
                # if greater than 100, scale faster motor to 100 and scale slower motor same ammount
                if right_motor_speed > 100:
@@ -174,8 +174,8 @@ class MotorController:
           elif self.steering_angle > 0:
 
                # right motor moves slower than left
-               right_motor_speed = speed*(wheel_length/tan(abs(self.steering_angle)))/(wheel_length/tan(abs(self.steering_angle)) + half_wheel_width)
-               left_motor_speed = speed*(wheel_length/tan(abs(self.steering_angle)) + half_wheel_width)/(wheel_length/tan(abs(self.steering_angle)))
+               right_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(self.steering_angle)))/(wheel_length/tan(2*pi/360*abs(self.steering_angle)) + half_wheel_width)
+               left_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(self.steering_angle)) + half_wheel_width)/(wheel_length/tan(2*pi/360*abs(self.steering_angle)))
                     
                     # if greater than
                if left_motor_speed > 100:
@@ -188,8 +188,8 @@ class MotorController:
                right_motor_speed = speed
                left_motor_speed = speed
                
-          self.set_motor_speed(1, right_motor_speed)
-          self.set_motor_speed(2, left_motor_speed)
+          self.set_motor_speed(1, -1*right_motor_speed)
+          self.set_motor_speed(2, -1*left_motor_speed)
 
      @log_on_start(logging.DEBUG , "forward, speed value: {speed:f}")
      @log_on_error(logging.DEBUG , "forward error")
@@ -202,8 +202,8 @@ class MotorController:
 
           if self.steering_angle < 0:
                # left motor moves slower than right motor
-               left_motor_speed = speed*(wheel_length/tan(abs(self.steering_angle)))/(wheel_length/tan(abs(self.steering_angle)) + half_wheel_width)
-               right_motor_speed = speed*(wheel_length/tan(abs(self.steering_angle)) + half_wheel_width)/(wheel_length/tan(abs(self.steering_angle)))
+               left_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(self.steering_angle)))/(wheel_length/tan(2*pi/360*abs(self.steering_angle)) + half_wheel_width)
+               right_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(self.steering_angle)) + half_wheel_width)/(wheel_length/tan(abs(2*pi/360*self.steering_angle)))
 
                # if greater than 100, scale faster motor to 100 and scale slower motor same ammount
                if right_motor_speed > 100:
@@ -214,8 +214,8 @@ class MotorController:
           elif self.steering_angle > 0:
 
                # right motor moves slower than left
-               right_motor_speed = speed*(wheel_length/tan(abs(self.steering_angle)))/(wheel_length/tan(abs(self.steering_angle)) + half_wheel_width)
-               left_motor_speed = speed*(wheel_length/tan(abs(self.steering_angle)) + half_wheel_width)/(wheel_length/tan(abs(self.steering_angle)))
+               right_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(self.steering_angle)))/(wheel_length/tan(2*pi/360*abs(self.steering_angle)) + half_wheel_width)
+               left_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(self.steering_angle)) + half_wheel_width)/(wheel_length/tan(2*pi/360*abs(self.steering_angle)))
                     
                     # if greater than
                if left_motor_speed > 100:
@@ -228,8 +228,8 @@ class MotorController:
                right_motor_speed = speed
                left_motor_speed = speed
 
-          self.set_motor_speed(1, -1*right_motor_speed)
-          self.set_motor_speed(2, -1*left_motor_speed)
+          self.set_motor_speed(1, right_motor_speed)
+          self.set_motor_speed(2, left_motor_speed)
 
 
      @log_on_start(logging.DEBUG , "stop")
