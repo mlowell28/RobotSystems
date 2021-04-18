@@ -1,5 +1,5 @@
 
-from custom_picarx_controller import *
+from motor_controller import *
 import time
 
 
@@ -65,40 +65,40 @@ def three_point_turn(controller):
     controller.stop()
     time.sleep(10)
 
-def track_target_velocity(controller, starting, target):
+#def track_target_velocity(controller, starting, target):
      
       
-     scale = 1
-     input = starting
-     while(1):
-          [left_ticks, right_ticks] = Encoders.get_ticks()
-          current_time = time.time()
-          time.sleep(.5)
-          new_time = time.time()
-          [new_left_ticks, new_right_ticks] = Encoders.get_ticks()
+    # scale = 1
+    # input = starting
+    # while(1):
+     #     [left_ticks, right_ticks] = Encoders.get_ticks()
+     #     current_time = time.time()
+     #     time.sleep(.5)
+     #     new_time = time.time()
+     #     [new_left_ticks, new_right_ticks] = Encoders.get_ticks()
 
-          delta_t = new_time - current_time;
-          left_d_tick_d_s = (new_left_ticks - left_ticks)/(new_time - current_time)
-          right_d_tick_d_s = (new_right_ticks - right_ticks)/(new_time - current_time)
+      #    delta_t = new_time - current_time;
+      #    left_d_tick_d_s = (new_left_ticks - left_ticks)/(new_time - current_time)
+      #    right_d_tick_d_s = (new_right_ticks - right_ticks)/(new_time - current_time)
 
-          print("left motor tick speed " + str(left_d_tick_d_s) + " right motor tick speed " + str(right_d_tick_d_s))
+       #   print("left motor tick speed " + str(left_d_tick_d_s) + " right motor tick speed " + str(right_d_tick_d_s))
           #print("new left tick " + str(new_left_ticks) + " old left tick " + str(left_ticks))
           #print("new right tick " + str(new_right_ticks) + " old right tick " + str(right_ticks))
 
-          if abs(d_tick_d_s - target) > 2:
-               input = input + scale*(target - d_tick_d_s)
-               print("input is "+ str(input))
-          controller.set_motor_speed(
+        #  if abs(d_tick_d_s - target) > 2:
+         #      input = input + scale*(target - d_tick_d_s)
+          #     print("input is "+ str(input))
+         # controller.set_motor_speed(
      
 done = False
 options = ["1","2","3","4","5"]
 
 my_controller = MotorController()
 
-Encoders = Motor_Encoders("D2", "D3")
+#Encoders = Motor_Encoders("D2", "D3")
 
-while(1):
-     track_target_velocity(my_controller, 0, 20)
+#while(1):
+    # track_target_velocity(my_controller, 0, 20)
 
 while(done == False):
     print("Please enter 1 random movement, 2 for parallel parking right, 3 for parallel parking left, 4 for Three-Point-Turn or 5 for exit")
