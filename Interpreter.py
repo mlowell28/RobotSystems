@@ -1,11 +1,11 @@
 import sys
 import time
 from picarx_improved import *
-from sensors import *
+from sensors import LineSensor
+
 
 class Interpreter:
     def __init__(self, sensitivity = 1, follow_type = "light"):   
-
         self.sensitivity = sensitivity
         self.polarity = follow_type
 
@@ -23,17 +23,27 @@ class Interpreter:
 
         
 if __name__ == "__main__":
-    set_dir_servo_angle(0);
-    time.sleep(10)
     linesensor = LineSensor()
-    interpreter = Interpreter(.005, "dark")
+    set_dir_servo_angle(0)
+    time.sleep(5)
+    interpreter = Interpreter(.002, "dark")
+    set_dir_servo_angle(0)
+    angle_buffer = [0]
+    buffer_index = 0;
 
     while True:
         values = linesensor.read_values()
         interpreter_output = interpreter.interpret_line_sensor(values)
-        #print("Values :" + str(values))
-        #print("Direction :" + str(interpreter_output))
-        time.sleep(.5)
-        angle = 30*interpreter_output
-        set_dir_servo_angle(angle)
-        forward(30)
+       # print("Values :" + str(values))
+       # print("Direction :" + str(interpreter_output))
+        angle_buffer[buffer_index] = 40*interpreter_output
+        #print(angle_buffer)
+        buffer_index += 1
+        if buffer_index == len(angle_buffer):
+             buffer_index = 0
+        angle_avg = sum(angle_buffer)/len(angle_buffer)
+        
+        #print("Angle avg: "+str(angle_avg))
+        set_dir_servo_angle(angle_avg)
+        forward(25)
+        time.sleep(.05)

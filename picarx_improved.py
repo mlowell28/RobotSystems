@@ -13,9 +13,9 @@ except ImportError:
     print("This computer does not appear to be a PiCar-X system(/opt/ezblock is not present). Shadowing hardware calls with substitute functions")
     from sim_ezblock import *
 
-logging_format = "%(asctime)s: %(message)s"
-logging.basicConfig(format=logging_format , level=logging.INFO ,datefmt ="%H:%M:%S")
-logging.getLogger ().setLevel(logging.DEBUG)
+#logging_format = "%(asctime)s: %(message)s"
+#logging.basicConfig(format=logging_format , level=logging.INFO ,datefmt ="%H:%M:%S")
+#logging.getLogger ().setLevel(logging.DEBUG)
 
 PERIOD = 4095
 PRESCALER = 10
@@ -52,7 +52,7 @@ for pin in motor_speed_pins:
 #@log_on_error(logging.DEBUG , "set_motor_speed  encountersan error  before  completing ")
 #@log_on_end(logging.DEBUG , "set_motor_speed completed")
 def set_motor_speed(motor, speed):
-    logging.debug('setting motor speed, motor: %f, speed: %f', motor, speed)
+    #logging.debug('setting motor speed, motor: %f, speed: %f', motor, speed)
     global cali_speed_value,cali_dir_value
     motor -= 1
     if speed >= 0:
@@ -72,7 +72,7 @@ def set_motor_speed(motor, speed):
 #@log_on_error(logging.DEBUG , "motor_speed_calibration error")
 #@log_on_end(logging.DEBUG , "motor_speed_calibration endded")
 def motor_speed_calibration(value):
-    logging.debug('calibrating speed with value: %s', value)
+    #logging.debug('calibrating speed with value: %s', value)
     global cali_speed_value,cali_dir_value
     cali_speed_value = value
     if value < 0:
@@ -88,7 +88,7 @@ def motor_speed_calibration(value):
 def motor_direction_calibration(motor, value):
     # 0: positive direction
     # 1:negative direction
-    logging.debug('calibrating motor direction motor: %s, value: %s', motor, value)
+    #logging.debug('calibrating motor direction motor: %s, value: %s', motor, value)
     global cali_dir_value
     motor -= 1
     if value == 1:
@@ -98,7 +98,7 @@ def motor_direction_calibration(motor, value):
 #@log_on_error(logging.DEBUG , "dir_servo_angle_calibration error")
 #@log_on_end(logging.DEBUG , "dir_servo_angle_calibration endded")
 def dir_servo_angle_calibration(value):
-    logging.debug('dir servo angle calibration: %s', value)
+    #logging.debug('dir servo angle calibration: %s', value)
     global dir_cal_value
     dir_cal_value = value
     set_dir_servo_angle(dir_cal_value)
@@ -108,7 +108,7 @@ def dir_servo_angle_calibration(value):
 #@log_on_error(logging.DEBUG , "set_dir_servo_angle error")
 #@log_on_end(logging.DEBUG , "set_dir_servo_angle endded")
 def set_dir_servo_angle(value):
-    logging.debug('set dir servo angle %s', value)
+    #logging.debug('set dir servo angle %s', value)
     global dir_cal_value
     global steering_angle 
     steering_angle = value
@@ -118,7 +118,7 @@ def set_dir_servo_angle(value):
 #@log_on_error(logging.DEBUG , "camera_servo1_angle_calibration")
 #@log_on_end(logging.DEBUG , "camera_servo1_angle_calibration ended")
 def camera_servo1_angle_calibration(value):
-    logging.debug('camera servo1 angle calibration %s', value)
+    #logging.debug('camera servo1 angle calibration %s', value)
     global cam_cal_value_1
     cam_cal_value_1 = value
     set_camera_servo1_angle(cam_cal_value_1)
@@ -128,7 +128,7 @@ def camera_servo1_angle_calibration(value):
 #@log_on_error(logging.DEBUG , "camera_servo2_angle_calibration error")
 #@log_on_end(logging.DEBUG , "camera_servo2_angle_calibration ended")
 def camera_servo2_angle_calibration(value):
-    logging.debug('camera servo2 angle calibration %s', value)
+    #logging.debug('camera servo2 angle calibration %s', value)
     global cam_cal_value_2
     cam_cal_value_2 = value
     set_camera_servo2_angle(cam_cal_value_2)
@@ -138,7 +138,7 @@ def camera_servo2_angle_calibration(value):
 #@log_on_error(logging.DEBUG , "set_camera_servo1_angle error")
 #@log_on_end(logging.DEBUG , "set_camera_servo1_angle ended")
 def set_camera_servo1_angle(value):
-    logging.debug('setting camera servo1 angle %s', value)
+    #logging.debug('setting camera servo1 angle %s', value)
     global cam_cal_value_1
     camera_servo_pin1.angle(-1 *(value+cam_cal_value_1))
 
@@ -146,7 +146,7 @@ def set_camera_servo1_angle(value):
 #@log_on_error(logging.DEBUG , "camera_servo2_angle error")
 #@log_on_end(logging.DEBUG , "camera_servo2_angle ended")
 def set_camera_servo2_angle(value):
-    logging.debug('setting camera servo2 angle %s', value)
+    #logging.debug('setting camera servo2 angle %s', value)
     global cam_cal_value_2
     camera_servo_pin2.angle(-1 * (value+cam_cal_value_2))
 
@@ -154,7 +154,7 @@ def set_camera_servo2_angle(value):
 #@log_on_error(logging.DEBUG , "get_adc_value error")
 #@log_on_end(logging.DEBUG , "get_adc_value ended")
 def get_adc_value():
-    logging.debug('getting ADC values')
+    #logging.debug('getting ADC values')
     adc_value_list = []
     adc_value_list.append(S0.read())
     adc_value_list.append(S1.read())
@@ -165,7 +165,7 @@ def get_adc_value():
 #@log_on_error(logging.DEBUG , "set_power error")
 #@log_on_end(logging.DEBUG , "set_power ended")
 def set_power(speed):
-    logging.debug('set motor power %s', speed)
+    #logging.debug('set motor power %s', speed)
     set_motor_speed(1, speed)
     set_motor_speed(2, speed) 
 
@@ -179,7 +179,7 @@ def backward(speed):
     wheel_length = 3.75
     global steering_angle
 
-    logging.debug('set motor speed backward %f with angle %f' , speed, steering_angle)
+    #logging.debug('set motor speed backward %f with angle %f' , speed, steering_angle)
 
     if steering_angle < 0:
         # left motor moves slower than right motor
@@ -221,15 +221,15 @@ def forward(speed):
     wheel_length = 3.75 
     global steering_angle 
 
-    logging.debug("set motor speed forward %f with angle %f", speed, steering_angle)
+    #logging.debug("set motor speed forward %f with angle %f", speed, steering_angle)
 
     if steering_angle < 0:
         # left motor moves slower than right motor
         left_motor_speed = speed*(wheel_length/tan(2*pi/360 * abs(steering_angle)))/(wheel_length/tan(2*pi/360*abs(steering_angle)) + half_wheel_width)
         right_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(steering_angle)) + half_wheel_width)/(wheel_length/tan(2*pi/360*abs(steering_angle)))
 
-        print("left motor speed: " + str(left_motor_speed))
-        print("right motor speed " + str(right_motor_speed)) 
+        #print("left motor speed: " + str(left_motor_speed))
+        #print("right motor speed " + str(right_motor_speed)) 
 
         # if greater than 100, scale faster motor to 100 and scale slower motor same ammount
         if right_motor_speed > 100:
@@ -243,8 +243,8 @@ def forward(speed):
         right_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(steering_angle)))/(wheel_length/tan(2*pi/360*abs(steering_angle)) + half_wheel_width)
         left_motor_speed = speed*(wheel_length/tan(2*pi/360*abs(steering_angle)) + half_wheel_width)/(wheel_length/tan(2*pi/360*abs(steering_angle)))
             
-        print("left motor speed: " + str(left_motor_speed))
-        print("right motor speed: " + str(right_motor_speed))
+        #print("left motor speed: " + str(left_motor_speed))
+        #print("right motor speed: " + str(right_motor_speed))
             # if greater than
         if left_motor_speed > 100:
             scale = 100/left_motor_speed
@@ -264,7 +264,7 @@ def forward(speed):
 #@log_on_error(logging.DEBUG , "stop error")
 #@log_on_end(logging.DEBUG , "stop ended")
 def stop():
-    logging.debug('stopping motors')
+    #logging.debug('stopping motors')
     set_motor_speed(1, 0)
     set_motor_speed(2, 0)
 
@@ -272,7 +272,7 @@ def stop():
 #@log_on_error(logging.DEBUG , "Get_distance error")
 #@log_on_end(logging.DEBUG , "Get_distance ended")
 def Get_distance():
-    logging.debug('measuring distance')
+    #logging.debug('measuring distance')
     timeout=0.01
     trig = Pin('D8')
     echo = Pin('D9')
@@ -321,3 +321,4 @@ atexit.register(stop)
 if __name__ == "__main__":
     while(1):
         test()
+

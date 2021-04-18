@@ -1,4 +1,4 @@
-\
+
 from picarx_improved import *
 import time
 
@@ -13,7 +13,7 @@ def random_movement():
     forward(50)
     time.sleep(4)
     print("angle  -40")
-    set_dir_servo_angle(-20)
+    set_dir_servo_angle(-40)
     forward(50)
     time.sleep(4)
 
