@@ -1,9 +1,9 @@
 
 import RPi.GPIO as GPIO
-
+from ezblock import Pin
 class MotorEncoders:
 
-     def __init__(self, left_pin, right_pin, speed_update_period):
+     def __init__(self, left_pin, right_pin):
           self.left_tick = 0
           self.right_tick = 0
 

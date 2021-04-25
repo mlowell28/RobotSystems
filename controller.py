@@ -29,19 +29,19 @@ class Line_Follower_Controller:
           self.scale = scale
 
      def line_follower_controller_thread(self, time_delay, interpreter_bus):
-        self.run_thread = True
-        self.interpreter_bus = interpreter_bus
-        self.time_delay = time_delay
+          self.run_thread = True
+          self.interpreter_bus = interpreter_bus
+          self.time_delay = time_delay
 
-        while(self.run_thread):
-             interpreter_output = self.interpreter_bus.read()
-             angle = self.get_angle(interpreter_output)
-             self.my_motor_controller.set_dir_servo_angle(angle)
-             self.my_mmotor_controller.forward(self.speed)
-             time.sleep(time_delay)
+          while(self.run_thread):
+               interpreter_output = self.interpreter_bus.read()
+               angle = self.get_angle(interpreter_output)
+               self.my_motor_controller.set_dir_servo_angle(angle)
+               self.my_mmotor_controller.forward(self.speed)
+               time.sleep(time_delay)
 
-    def stop_sensor_thread(self):
-        self.run_thread = False
+     def stop_sensor_thread(self):
+          self.run_thread = False
 
 
 if __name__ == "__main__":
