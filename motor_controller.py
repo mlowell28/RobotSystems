@@ -52,8 +52,10 @@ class MotorController:
           
           atexit.register(self.cleanup)
 
-          PID = threading.thread(target = self.PID_loop)
-          PID.start()
+          if self.use_PID_control == True:
+               self.encoders = motor_encoders.MotorEncoders()
+               PID = threading.thread(target = self.PID_loop)
+               PID.start()
 
     # @log_on_start(logging.DEBUG , "set_motor_speed started, motor: {motor:f}, speed: {speed:f}")
     # @log_on_error(logging.DEBUG , "set_motor_speed  encountersan error  before  completing ")
