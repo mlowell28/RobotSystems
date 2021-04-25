@@ -5,6 +5,7 @@ from logdecorator import log_on_start, log_on_end, log_on_error
 import atexit 
 from ezblock import Pin
 import RPi.GPIO as GPIO
+import motor_encoders
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format , level=logging.INFO ,datefmt ="%H:%M:%S")
@@ -20,7 +21,7 @@ except ImportError:
      from sim_ezblock import *
 
 class MotorController:
-     def __init__(self):
+     def __init__(self, use_PID_control = False):
  
           self.PERIOD = 4095
           self.PRESCALER = 10
@@ -35,6 +36,7 @@ class MotorController:
           self.left_rear_dir_pin = Pin("D4")
           self.right_rear_dir_pin = Pin("D5")
 
+          self.use_PID_control = use_PID_control
           self.Servo_dir_flag = 1
           self.dir_cal_value = -5.5
           self.cam_cal_value_1 = 0
@@ -50,11 +52,15 @@ class MotorController:
           
           atexit.register(self.cleanup)
 
+          PID = threading.thread(target = self.PID_loop)
+          PID.start()
+
     # @log_on_start(logging.DEBUG , "set_motor_speed started, motor: {motor:f}, speed: {speed:f}")
     # @log_on_error(logging.DEBUG , "set_motor_speed  encountersan error  before  completing ")
     # @log_on_end(logging.DEBUG , "set_motor_speed completed")
      def set_motor_speed(self, motor, speed):
 #          logging.debug('setting motor speed, motor: %f, speed: %f', motor, speed)
+
           motor -= 1
           if speed >= 0:
                direction = 1 * self.cali_dir_value[motor]
@@ -68,6 +74,7 @@ class MotorController:
           else:
                self.motor_direction_pins[motor].low()
                self.motor_speed_pins[motor].pulse_width_percent(speed)
+
 
    #  @log_on_start(logging.DEBUG , "motor_speed_calibration started {value:f}")
    #  @log_on_error(logging.DEBUG , "motor_speed_calibration error")
@@ -189,8 +196,12 @@ class MotorController:
                right_motor_speed = speed
                left_motor_speed = speed
                
-          self.set_motor_speed(1, -1*right_motor_speed)
-          self.set_motor_speed(2, -1*left_motor_speed)
+          if self.used_PID_loop == True:
+               self.left_motor_target_speed = left_motor_speed
+               self.right_motor_target_speed = right_motor_speed
+          else:
+               self.set_motor_speed(1, -1*right_motor_speed)
+               self.set_motor_speed(2, -1*left_motor_speed)
 
      #@log_on_start(logging.DEBUG , "forward, speed value: {speed:f}")
      #@log_on_error(logging.DEBUG , "forward error")
@@ -229,8 +240,12 @@ class MotorController:
                right_motor_speed = speed
                left_motor_speed = speed
 
-          self.set_motor_speed(1, right_motor_speed)
-          self.set_motor_speed(2, left_motor_speed)
+           if self.used_PID_loop == True:
+               self.left_motor_target_speed = left_motor_speed
+               self.right_motor_target_speed = right_motor_speed
+          else:
+               self.set_motor_speed(1, right_motor_speed)
+               self.set_motor_speed(2, left_motor_speed)
 
 
      #@log_on_start(logging.DEBUG , "stop")
@@ -240,29 +255,41 @@ class MotorController:
         #  logging.debug('stopping motors')
           self.set_motor_speed(1, 0)
           self.set_motor_speed(2, 0)
+          self.PID_loop_run = False
+
+     def stop_PID_loop(self):
+          self.PID_loop_run = False
      
      def cleanup(self):
           self.stop()
 
+     def PID_loop(self):
 
-class Motor_Encoders:
+         while self.PID_loop_run == True:
+            [left_tick, right_tick] = self.encoders.get_ticks()
+            current_time = time.time()
+            d_time = current_time - self.past_time
+            left_speed = (left_tick - self.last_left_tick)/d_time
+            right_speed = (right_tick - self.last_right_tick)/d_time
+            self.past_time = current_time
+            self.last_left_tick = left_tick
+            self.last_right_tick = right_tick
 
-     def __init__(self, left_pin, right_pin):
-          self.left_tick = 0
-          self.right_tick = 0
-          self.left_encoder_pin = Pin(left_pin)
-          self.right_encoder_pin = Pin(right_pin)
-          self.left_encoder_pin.irq(self.update_left_ticks, GPIO.BOTH, 1)
-          self.right_encoder_pin.irq(self.update_right_ticks, GPIO.BOTH,1)
+            self.speed_sync.acquire()
+            self.left_motor_out = self.left_motor_out - (left_speed-abs(self.left_target_speed))
+            self.right_motor_out = self.right_motor_out - (right_speed - abs(self.right_target_speed))
+            self.speed_sync.release()
+            self.set_motor_speed(1, math.copysign(right_motor_out, right_target_speed))
+            self.set_motor_speed(2, math.copysign(left_motor_out, left_target_speed))
+            time.sleep(self.loop_update_time)
 
-     def get_ticks(self):
-          return [self.left_tick, self.right_tick]
 
-     def update_left_ticks(self, channel):
-          self.left_tick = self.left_tick + 1
 
-     def update_right_ticks(self, channel):
-          self.right_tick = self.right_tick + 1
+
+
+
+
+
 
 
      
