@@ -8,9 +8,9 @@ import RPi.GPIO as GPIO
 import motor_encoders
 import threading
 
-logging_format = "%(asctime)s: %(message)s"
-logging.basicConfig(format=logging_format , level=logging.INFO ,datefmt ="%H:%M:%S")
-logging.getLogger ().setLevel(logging.DEBUG)
+#logging_format = "%(asctime)s: %(message)s"
+#logging.basicConfig(format=logging_format , level=logging.INFO ,datefmt ="%H:%M:%S")
+#logging.getLogger ().setLevel(logging.DEBUG)
 
 try:
      from ezblock import *
@@ -203,8 +203,8 @@ class MotorController:
                left_motor_speed = speed
                
           if self.use_PID == True:
-               self.left_motor_target_speed = left_motor_speed
-               self.right_motor_target_speed = right_motor_speed
+               self.left_motor_target_speed = -1*left_motor_speed
+               self.right_motor_target_speed = -1*right_motor_speed
           else:
                self.set_motor_speed(1, -1*right_motor_speed)
                self.set_motor_speed(2, -1*left_motor_speed)
@@ -268,15 +268,21 @@ class MotorController:
      
      def cleanup(self):
           self.stop()
+     
+     #K_p = .3 and k_i = .1 work oK
 
-     def PID_loop(self):
+     def PID_loop(self,K_p = .3, K_i = .3):
 
-         self.update_period = .5
+         self.update_period = .1
          self.prior_time = time.time()
          self.last_left_tick = 0
          self.last_right_tick = 0
          self.left_motor_out = 0
          self.right_motor_out = 0
+         self.K_p = K_p
+         self.K_i = K_i
+         self.int_left_error = 0
+         self.int_right_error = 0
          time.sleep(1)
 
          while self.use_PID == True:
@@ -285,18 +291,30 @@ class MotorController:
             d_time = current_time - self.prior_time
             left_speed = (left_tick - self.last_left_tick)/d_time
             right_speed = (right_tick - self.last_right_tick)/d_time
-
-            print("left speed " + str(left_speed) + " right speed " + str(right_speed))
-            print("left target speed " + str(self.left_motor_target_speed) + " right target speed " + str(self.right_motor_target_speed))
+            
+            #print("last left ticks " +str(self.last_left_tick) + " last right ticks "+ str(self.last_right_tick))
+            #print("left ticks " + str(left_tick) + " right ticks " + str(right_tick))
+            #print("left speed " + str(left_speed) + " right speed " + str(right_speed))
+            #print("left target speed " + str(abs(self.left_motor_target_speed)) + " right target speed " + str(abs(self.right_motor_target_speed)))
             self.prior_time = current_time
             self.last_left_tick = left_tick
             self.last_right_tick = right_tick
 
             self.speed_sync_lock.acquire()
-            self.left_motor_out = self.left_motor_out + .5*(abs(self.left_motor_target_speed) - left_speed)
-            self.right_motor_out = self.right_motor_out + .5*(abs(self.right_motor_target_speed) - right_speed)
+            
+            left_error = abs(self.left_motor_target_speed) - left_speed
+            right_error = abs(self.right_motor_target_speed) - right_speed
 
-            print("left motor output " + str(self.left_motor_out) + " right motor output " + str(self.right_motor_out))
+            print("left erorr " + str(left_error) + " right error " + str(right_error))
+            self.int_left_error = self.int_left_error +  d_time*left_error
+            self.int_right_error = self.int_right_error + d_time*right_error
+            
+            print("left integral error " + str(self.int_left_error) + " right integral error " + str(self.int_right_error))
+
+            self.left_motor_out = self.K_p * left_error + self.K_i * self.int_left_error
+            self.right_motor_out = self.K_p * right_error + self.K_i * self.int_right_error
+
+            #print("left motor output " + str(self.left_motor_out) + " right motor output " + str(self.right_motor_out))
            
             self.speed_sync_lock.release()
             self.set_motor_speed(1, math.copysign(self.right_motor_out, self.right_target_speed))
@@ -307,7 +325,7 @@ class MotorController:
 
 if __name__ == "__main__":
      my_controller = MotorController(use_PID = True)
-     my_controller.forward(50, 0)
+     my_controller.backward(50, 0)
 
 
 
