@@ -1,5 +1,6 @@
 
 import sys
+import copy
 sys.path.append(r'/opt/ezblock')
 import time
 from ezblock import ADC
@@ -14,6 +15,7 @@ class LineSensor:
     def __init__(self):   
 
         self.sensor_values = [0,0,0]
+        self.run_thread = None
 
     def read_values(self):
         sensor_values = [adc_A0.read(), adc_A1.read(), adc_A2.read()]
@@ -22,6 +24,19 @@ class LineSensor:
 
     def get_saved_values(self):
         return self.sensor_values 
+
+    def sensor_thread(self, time_delay, sensor_bus):
+        self.run_thread = True
+        self.time_delay = time_delay
+        self.sensor_bus = sensor_bus
+
+        while(self.run_thread):
+             values = self.read_values()
+             self.sensor_bus.write(copy.deepcopy(values))
+             time.sleep(self.time_delay)
+
+    def stop_sensor_thread(self):
+        self.run_thread = False
 
         
 if __name__ == "__main__":

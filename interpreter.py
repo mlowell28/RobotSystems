@@ -20,7 +20,7 @@ class Interpreter:
             output = output/abs(output)
         return output
 
-    def start_interpreter_thread(self, time_delay, sensor_bus, interpreter_bus):
+    def interpreter_thread(self, time_delay, sensor_bus, interpreter_bus):
 
         self.run_thread = True
         self.time_delay = time_delay
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     interpreter = Interpreter(.002, "dark")
     set_dir_servo_angle(0)
     angle_buffer = [0]
-    buffer_index = 0;
+    buffer_index = 0
 
     while True:
         values = linesensor.read_values()
