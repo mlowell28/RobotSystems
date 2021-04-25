@@ -5,11 +5,12 @@ import time
 
 class Line_Follower_Controller:
 
-     def __init__(self, scale = 40):
+     def __init__(self, scale = 40, speed = 50):
           self.scale = scale
           self.my_motor_controller = motor_controller.MotorController()
           self.buffer_index = 0
           self.angle_buffer = [0,0,0]
+          self.speed = speed
 
      def get_angle(self, interpreter_output):
                          
@@ -24,6 +25,20 @@ class Line_Follower_Controller:
      def set_scale(self,scale):
           self.scale = scale
 
+     def start_Line_Follower_Controller_thread(self, time_delay, interpreter_bus):
+        self.run_thread = True
+        self.interpreter_bus = interpreter_bus
+        self.time_delay = time_delay
+
+        while(self.run_thread):
+             interpreter_output = self.interpreter_bus.read()
+             angle = self.get_angle(interpreter_output)
+             self.my_motor_controller.set_dir_servo_angle(angle)
+             self.my_mmotor_controller.forward(self.speed)
+             time.sleep(time_delay)
+
+    def stop_sensor_thread(self):
+        self.run_thread = False
 
 
 if __name__ == "__main__":

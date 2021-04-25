@@ -20,6 +20,22 @@ class Interpreter:
             output = output/abs(output)
         return output
 
+    def start_interpreter_thread(self, time_delay, sensor_bus, interpreter_bus):
+
+        self.run_thread = True
+        self.time_delay = time_delay
+        self.sensor_bus = sensor_bus
+        self.interpreter_bus = interpreter_bus
+
+        while(self.run_thread):
+             sensor_values = self.sensor_bus.read()
+             interpreted_values = self.interpret_line_sensor(sensor_values)
+             self.interpreter_bus.write(interpreted_values)
+             time.sleep(self.time_delay)
+
+    def stop_interpreter_thread(self):
+        self.run_thread = False
+
         
 if __name__ == "__main__":
     linesensor = LineSensor()
