@@ -46,6 +46,7 @@ class MotorController:
           self.motor_speed_pins = [self.left_rear_pwm_pin, self.right_rear_pwm_pin]
           self.cali_dir_value = [-1, 1]
           self.cali_speed_value = [0, 0]
+          self.steering_angle = 0
 
           for pin in self.motor_speed_pins:
                pin.period(self.PERIOD)
@@ -167,8 +168,7 @@ class MotorController:
      #@log_on_error(logging.DEBUG , "backward error")
      #@log_on_end(logging.DEBUG , "backward ended")
 
-     def backward(self, speed, angle):
-          self.steering_angle = angle
+     def backward(self, speed):
           half_wheel_width = 4.75
           wheel_length = 3.75
 
@@ -212,8 +212,7 @@ class MotorController:
      #@log_on_start(logging.DEBUG , "forward, speed value: {speed:f}")
      #@log_on_error(logging.DEBUG , "forward error")
      #@log_on_end(logging.DEBUG , "forward ended")
-     def forward(self, speed, angle):
-          self.steering_angle = angle
+     def forward(self, speed):
           half_wheel_width = 4.75
           wheel_length = 3.75 
        #   logging.debug("set motor speed forward %f with angle %f", speed, self.steering_angle)

@@ -26,10 +26,11 @@ class Interpreter:
         self.time_delay = time_delay
         self.sensor_bus = sensor_bus
         self.interpreter_bus = interpreter_bus
-
+        print("starting interpreter thread")
         while(self.run_thread):
              sensor_values = self.sensor_bus.read()
              interpreted_values = self.interpret_line_sensor(sensor_values)
+             #print("interpreted values " + str(interpreted_values))
              self.interpreter_bus.write(interpreted_values)
              time.sleep(self.time_delay)
 

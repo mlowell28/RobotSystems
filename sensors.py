@@ -3,6 +3,7 @@ import sys
 import copy
 sys.path.append(r'/opt/ezblock')
 import time
+from threading import Lock
 from ezblock import ADC
 from ezblock import print
 my_3ch = None
@@ -29,10 +30,13 @@ class LineSensor:
         self.run_thread = True
         self.time_delay = time_delay
         self.sensor_bus = sensor_bus
-
+        lock = Lock()
+        print("starting sensor thread") 
         while(self.run_thread):
-             values = self.read_values()
+             with lock:
+                  values = self.read_values()
              self.sensor_bus.write(copy.deepcopy(values))
+             #print("sensor values " + str(values)) 
              time.sleep(self.time_delay)
 
     def stop_sensor_thread(self):
