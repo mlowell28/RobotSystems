@@ -27,7 +27,7 @@ def recv(conn, command_bus):
            
             print("buffer read " + str(len(buffer)))
             header = bytes_received[0:4]
-            payload_size = struct.unpack('i', header)
+            payload_size = struct.unpack('<i', header)
             payload_size  = payload_size[0]
             print("payload size: " + str(payload_size))
 
@@ -50,27 +50,42 @@ def recv(conn, command_bus):
             command_bus.write(message)
         
 
-def send(conn):
+def send(conn, command_bus = None):
     
-        while(continue_tranmission == True):
-            MESSAGE = "Test"
-            encoded_message = MESSAGE.encode('utf-8')
-            message_size = len(encoded_message) 
-            header = struct.pack('i', message_size)
-            to_send = bytearray(header)
-            to_send.extend(encoded_message)
-            print("sending message")
-            sent_length = conn.send(to_send)
-            print("sent chunk length "+ str(sent_length))
+    camera = picamera.PiCamera()
+    camera.resolution(640,480)
+    camera.start_preview()
+    time.sleep(2)
 
-            while sent_length < len(to_send):
-                send = conn.send(to_send)
-                sent_length = sent_length + send
-                print("sent chunk length " + str(sent_length))
+    socket_file = conn.make_file('wb')
+    stream = io.BytesIO()
 
-            print("done sending message")
+    for picture in camera.capture_continuous(stream, 'jpeg'):
 
-            time.sleep(1)
+        # read currently running command
+        command = command_bus.read()
+        encoded_command = command.encode('utf-8')
+        command_length = len(encoded_command)
+
+        # pack command via 4 by header giving length infront of byte encoded command
+        command_header = struct.pack('<i', command_length)
+        socket_file.write(command_header)
+        socket_file.write(encoded_command)
+
+        #pack byte size of image
+        image_header = struct.pack('<i', stream.tell())))
+        socket_file.write(image_header)
+        
+        # reset stream position to 0
+        stream.seek(0)
+
+        # send data
+        socket_file.write(stream.read())
+        socket_file.flush()
+
+        # reset stream
+        stream.seek(0)
+        stream.truncate()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as mysocket:
     mysocket.bind((HOST, PORT))
@@ -90,25 +105,33 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as mysocket:
 
                 if message != None:
 
+                    chunks = message.split(' ')
+
                     print("Command Received is: "+ message)
 
-                    if message == "send data":
+                    if chunks[0]== "send_data":
                         continue_tranmission = True
                         transmitter_thread = threading.Thread(target=send,args=(conn,))
                         transmitter_thread.start()
 
-                    if message == "stop sending":
+                    if chunks[0] == "stop_sending":
                         continue_tranmission = False
                     
-                    if message == "quit":
+                    if chunks[0] == "quit":
                         continue_recv = False
                         continue_tranmission = False
                         done = True
+                    
+                    if chunks[0] = "forward":
+                        print("setting forward as " + str(chunks[1]))
+                        print("setting angle as " + str(chunks[3]))
 
-
+                    if chunks[0] = "backward":
+                        print("setting backward as " + str(chunks[1]))
+                        print("setting angle as " + str(chunks[3]))
+    
         conn.shutdown(socket.SHUT_RDWR)
         conn.close()
 
-
-
+#def data_recv_thread(conn):
 

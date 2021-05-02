@@ -28,7 +28,7 @@ class Line_Follower_Controller:
      def set_scale(self,scale):
           self.scale = scale
 
-     def line_follower_controller_thread(self, time_delay, interpreter_bus):
+     def line_follower_controller_thread(self, time_delay, interpreter_bus, ultrasonic_sensor_bus):
           
           print("starting line follower loop")
           self.run_thread = True
@@ -36,6 +36,9 @@ class Line_Follower_Controller:
           self.time_delay = time_delay
            
           while(self.run_thread):
+               ultrasonic_distance = self.ultrasonic_sensor_bus.read()
+               if distance < 10:
+                    continue 
                interpreter_output = self.interpreter_bus.read()
                angle = self.get_angle(interpreter_output)
                #print("setting angle "+str(angle))
@@ -50,21 +53,26 @@ class Line_Follower_Controller:
 
 if __name__ == "__main__":
     
-    sensor_delay = .01
-    sensor_bus = bus.bus()
-
+    line_sensor_delay = .01
+    line_sensor_bus = bus.bus()
     
+    ultrasonic_sensor_delay = 1
+    ultrasonic_sensor_bus = bus.bus()
+
     interpreter_delay = .01
     interpreter_bus = bus.bus(0)
 
     controller_delay = .1
     
     linesensor = sensors.LineSensor()
+    ultrasonicsensor = sensors.UltrasonicSensor()
+
     interpreter = interpreter.Interpreter(.002, "dark")
     line_follower_controller = Line_Follower_Controller()
     print("starting threads")
     with  concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-         sensor_executor = executor.submit(linesensor.sensor_thread, sensor_delay, sensor_bus)
+         line_sensor_executor = executor.submit(linesensor.sensor_thread, line_sensor_delay, line_sensor_bus)
+         ultrasonic_sensor_exectuor = executor.submit(ultrasonicsensor.ultraonisc_sensor_thread, utrasonic_sensor_delay, ultrasonic_sensor_bus 
          interpreter_executor = executor.submit(interpreter.interpreter_thread, interpreter_delay, sensor_bus, interpreter_bus)
          line_follower_executor = executor.submit(line_follower_controller.line_follower_controller_thread, controller_delay, interpreter_bus)
 
