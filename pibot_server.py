@@ -52,7 +52,7 @@ def recv(conn, command_bus):
 
 def send(conn, command_bus = None):
     
-    camera = picamera.PiCamera()
+    camera = PiCamera()
     camera.resolution(640,480)
     camera.start_preview()
     time.sleep(2)
@@ -129,7 +129,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as mysocket:
                         transmitter_thread = threading.Thread(target=send,args=(conn,))
                         transmitter_thread.start()
 
-                    if chunks[0] == "stop_sending":
+                    if chunks[0] == "stop_sending_data":
                         continue_tranmission = False
                     
                     if chunks[0] == "quit":

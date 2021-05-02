@@ -121,20 +121,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
         
         print()
         start_send = "send_data"
-        start_send_encoded = start_send.encode('utf-8')
-        command_length = len(start_send)
-        start_send_header = struct.pack('<i', command_length)
-        
-        send_bus.write(start_send_header)
         send_bus.write(start_send)
 
         time.sleep(20)
 
         stop_send = "stop_sending_data"
-        stop_send_encoded = stop_send.encode('utf-8')
-        command_length = len(stop_send_encoded)
-        stop_send_header = struct.pack('<i', command_length)
-        send_bus.write(stop_send_header)
+        send_bus.write(stop_send)
 
         time.sleep(20)
 
