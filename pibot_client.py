@@ -4,7 +4,8 @@ import socket
 import struct
 import bus
 
-SERVER = '127.0.0.1'  # Standard loopback interface address (localhost)
+#SERVER = '127.0.0.1'  # Standard loopback interface address (localhost)
+SERVER = "pibot.local"
 PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
 
 def send(conn, send_bus):
@@ -58,7 +59,6 @@ def recv(conn, recv_bus):
                 print("command bytes received " + str(len(buffer)))
                 payload.extend(buffer)
 
-            command = struct.unpack('<i', payload)
             message = payload.decode('utf-8')
             print("Command Received is: "+ message)
 
@@ -88,15 +88,19 @@ def recv(conn, recv_bus):
                 buffer = conn.recv(payload_size - len(payload))
                 print("Image bytes received " + str(len(buffer)))
                 payload.extend(buffer)
-
             image = payload 
+
+            image_file = io.BytesIO(image)
+            image_file.show()
             recv_bus.write([command, image])
 
 
 
 # connect to server
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
-    conn.connect((SERVER, PORT))
+
+    address = socket.gethostbyname(SERVER)
+    conn.connect((address, PORT))
 
     # def buses
     send_bus = bus.bus()
