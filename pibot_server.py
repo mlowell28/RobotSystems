@@ -5,7 +5,7 @@ import struct
 import time
 import threading
 import bus
-import picamera
+from picamera import PiCamera
 import io
 
 PORT = 65432        # Port to listen on (non-privileged ports are > 1023)

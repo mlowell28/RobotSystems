@@ -99,9 +99,13 @@ def recv(conn, recv_bus):
 
 # connect to server
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
-
+    
+    print("getting pibot IP")
     address = socket.gethostbyname(SERVER)
+    print("pibot IP is " + str(address))
+    print("connecting to " + str(address) + " port " + str(PORT))
     conn.connect((address, PORT))
+    print("connected")
 
     # def buses
     send_bus = bus.bus()
@@ -114,18 +118,25 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
     recv_thread.start()
 
     while(1):
-        MESSAGE1 = "send data"
-        encoded_message1 = MESSAGE1.encode('utf-8')
-        packed_message = struct.pack('<i', encoded_message1)
-        send_bus.write(packed_message1)
+        
+        print()
+        start_send = "send_data"
+        start_send_encoded = start_send.encode('utf-8')
+        command_length = len(start_send)
+        start_send_header = struct.pack('<i', command_length)
+        
+        send_bus.write(start_send_header)
+        send_bus.write(start_send)
 
-        time.sleep(10)
+        time.sleep(20)
 
-        MESSAGE2 = "stop sending"
-        encoded_message2 = MESSAGE2.encode('utf-8')
-        send_bus.write(encoded_message2)
+        stop_send = "stop_sending_data"
+        stop_send_encoded = stop_send.encode('utf-8')
+        command_length = len(stop_send_encoded)
+        stop_send_header = struct.pack('<i', command_length)
+        send_bus.write(stop_send_header)
 
-        time.sleep(10)
+        time.sleep(20)
 
 print("done")
 
