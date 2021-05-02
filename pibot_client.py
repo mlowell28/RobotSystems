@@ -93,7 +93,7 @@ def recv(conn, recv_bus):
 
             image_file = io.BytesIO(image)
             image_file.show()
-            recv_bus.write([command, image])
+            recv_bus.write([message, image])
 
 
 

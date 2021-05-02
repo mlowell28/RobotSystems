@@ -59,36 +59,41 @@ def send(conn, command_bus = None):
 
     socket_file = conn.make_file('wb')
     stream = io.BytesIO()
-
-    for picture in camera.capture_continuous(stream, 'jpeg'):
-
-        # read currently running command
-        command = command_bus.read()
-        encoded_command = command.encode('utf-8')
-        command_length = len(encoded_command)
-
-        # pack command via 4 by header giving length infront of byte encoded command
-        command_header = struct.pack('<i', command_length)
-        socket_file.write(command_header)
-        socket_file.write(encoded_command)
-
-        #pack byte size of image
-        image_header = struct.pack('<i', stream.tell())
-        socket_file.write(image_header)
+    
+    while(continue_send == True):
+        for picture in camera.capture_continuous(stream, 'jpeg'):
+    
+            # read currently running command
+            command = command_bus.read()
+            encoded_command = command.encode('utf-8')
+            command_length = len(encoded_command)
+    
+            # pack command via 4 by header giving length infront of byte encoded command
+            command_header = struct.pack('<i', command_length)
+            socket_file.write(command_header)
+            socket_file.write(encoded_command)
+    
+            #pack byte size of image
+            image_header = struct.pack('<i', stream.tell())
+            socket_file.write(image_header)
+            
+            # reset stream position to 0
+            stream.seek(0)
+    
+            # send data
+            socket_file.write(stream.read())
+            socket_file.flush()
+    
+            # reset stream
+            stream.seek(0)
+            stream.truncate()
         
-        # reset stream position to 0
-        stream.seek(0)
-
-        # send data
-        socket_file.write(stream.read())
-        socket_file.flush()
-
-        # reset stream
-        stream.seek(0)
-        stream.truncate()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as mysocket:
+    
+    print("starting pibot server")
     HOST = socket.gethostbyname("pibot.local")
+    print("Listening on address:" + str(HOST) + " port: "+ str(PORT))
     mysocket.bind((HOST, PORT))
     mysocket.listen()
     while(1):
@@ -97,8 +102,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as mysocket:
             print('Connected by', addr)
             command_bus = bus.bus()
             continue_recv = True
+            
+            print("starting command receive thread")
             recv_thread = threading.Thread(target=recv, args=(conn, command_bus))
             recv_thread.start()
+            
+            continue_send = True
+            print("starting image sending thread")
+            send_thread = threading.Thread(target=send, args=(conn,))
+            send_thread.start()
+            
+            print("starting control loop")
             done = False
 
             while done == False:
