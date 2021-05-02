@@ -6,8 +6,8 @@ import time
 import threading
 import bus
 import picamera
+import io
 
-HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
 PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
 
 
@@ -73,7 +73,7 @@ def send(conn, command_bus = None):
         socket_file.write(encoded_command)
 
         #pack byte size of image
-        image_header = struct.pack('<i', stream.tell())))
+        image_header = struct.pack('<i', stream.tell())
         socket_file.write(image_header)
         
         # reset stream position to 0
@@ -88,6 +88,7 @@ def send(conn, command_bus = None):
         stream.truncate()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as mysocket:
+    HOST = socket.gethostbyname("pibot.local")
     mysocket.bind((HOST, PORT))
     mysocket.listen()
     while(1):
@@ -122,11 +123,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as mysocket:
                         continue_tranmission = False
                         done = True
                     
-                    if chunks[0] = "forward":
+                    if chunks[0] == "forward":
                         print("setting forward as " + str(chunks[1]))
                         print("setting angle as " + str(chunks[3]))
 
-                    if chunks[0] = "backward":
+                    if chunks[0] == "backward":
                         print("setting backward as " + str(chunks[1]))
                         print("setting angle as " + str(chunks[3]))
     

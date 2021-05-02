@@ -3,6 +3,7 @@ import threading
 import socket
 import struct
 import bus
+import io
 
 #SERVER = '127.0.0.1'  # Standard loopback interface address (localhost)
 SERVER = "pibot.local"
@@ -116,7 +117,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
         MESSAGE1 = "send data"
         encoded_message1 = MESSAGE1.encode('utf-8')
         packed_message = struct.pack('<i', encoded_message1)
-        send_bus.write(packed_message1()
+        send_bus.write(packed_message1)
 
         time.sleep(10)
 
