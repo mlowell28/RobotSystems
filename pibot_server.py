@@ -53,7 +53,7 @@ def recv(conn, command_bus):
 def send(conn, command_bus = None):
     
     camera = PiCamera()
-    camera.resolution(640,480)
+    camera.resolution = (640,480)
     camera.start_preview()
     time.sleep(2)
 
