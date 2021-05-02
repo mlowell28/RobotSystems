@@ -5,8 +5,7 @@ sys.path.append(r'/opt/ezblock')
 import time
 from ezblock import Ultrasonic
 from ezblock import ADC
-from ezblock import print
-
+from ezblock import Pin
 adc_A0=ADC("A0")
 adc_A1=ADC("A1")
 adc_A2=ADC("A2")
@@ -29,13 +28,13 @@ class LineSensor:
         self.run_thread = True
         self.time_delay = time_delay
         self.sensor_bus = sensor_bus
-        print("starting sensor thread")
+        print("starting line sensor thread")
         while self.run_thread:
             values = self.read_values()
             self.sensor_bus.write(copy.deepcopy(values))
             time.sleep(self.time_delay)
 
-    def stop_sensor_thread(self):
+    def stop_line_sensor_thread(self):
         self.run_thread = False
 
 class UltrasonicSensor:
@@ -48,7 +47,7 @@ class UltrasonicSensor:
     def get_saved_distance(self):
         return self.distance
 
-    def ultraonisc_sensor_thread(self, time_delay, sensor_bus):
+    def ultrasonic_sensor_thread(self, time_delay, sensor_bus):
         self.run_thread = True
         self.time_delay = time_delay
         self.sensor_bus = sensor_bus
@@ -58,11 +57,11 @@ class UltrasonicSensor:
 
         while(self.run_thread == True):
             self.distance = Ultrasonic(pin_D0, pin_D1).read()
-            sensor_bus.write(distance)
+            sensor_bus.write(self.distance)
             time.sleep(self.time_delay)
             
 
-    def stop_UltrasonicSensor_thread(self):
+    def stop_ultrasonic_sensor_thread(self):
         self.run_thread = False
 
         

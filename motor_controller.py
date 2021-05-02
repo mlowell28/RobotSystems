@@ -1,7 +1,7 @@
 import time
 from math import *
 import logging
-from logdecorator import log_on_start, log_on_end, log_on_error
+#from logdecorator import log_on_start, log_on_end, log_on_error
 import atexit 
 from ezblock import Pin
 import RPi.GPIO as GPIO
@@ -55,10 +55,11 @@ class MotorController:
           atexit.register(self.cleanup)
 
           if self.use_PID == True:
-               self.left_target_speed = 0
-               self.right_target_speed = 0
+               self.left_motor_target_speed = 0
+               self.right_motor_target_speed = 0
                self.speed_sync_lock = threading.Lock()
                self.encoders = motor_encoders.MotorEncoders("D2","D3")
+               print("starting PID loop")
                PID = threading.Thread(target = self.PID_loop)
                PID.start()
 
@@ -270,7 +271,7 @@ class MotorController:
      
      #K_p = .3 and k_i = .1 work oK
 
-     def PID_loop(self,K_p = .3, K_i = .3):
+     def PID_loop(self,K_p = .4, K_i = .3):
 
          self.update_period = .1
          self.prior_time = time.time()
@@ -304,11 +305,11 @@ class MotorController:
             left_error = abs(self.left_motor_target_speed) - left_speed
             right_error = abs(self.right_motor_target_speed) - right_speed
 
-            print("left erorr " + str(left_error) + " right error " + str(right_error))
+            #print("left erorr " + str(left_error) + " right error " + str(right_error))
             self.int_left_error = self.int_left_error +  d_time*left_error
             self.int_right_error = self.int_right_error + d_time*right_error
             
-            print("left integral error " + str(self.int_left_error) + " right integral error " + str(self.int_right_error))
+           # print("left integral error " + str(self.int_left_error) + " right integral error " + str(self.int_right_error))
 
             self.left_motor_out = self.K_p * left_error + self.K_i * self.int_left_error
             self.right_motor_out = self.K_p * right_error + self.K_i * self.int_right_error
@@ -316,15 +317,15 @@ class MotorController:
             #print("left motor output " + str(self.left_motor_out) + " right motor output " + str(self.right_motor_out))
            
             self.speed_sync_lock.release()
-            self.set_motor_speed(1, math.copysign(self.right_motor_out, self.right_target_speed))
-            self.set_motor_speed(2, math.copysign(self.left_motor_out, self.left_target_speed))
+            self.set_motor_speed(1, math.copysign(self.right_motor_out, self.right_motor_target_speed))
+            self.set_motor_speed(2, math.copysign(self.left_motor_out, self.left_motor_target_speed))
             time.sleep(self.update_period)
 
 
 
 if __name__ == "__main__":
      my_controller = MotorController(use_PID = True)
-     my_controller.backward(50, 0)
+     my_controller.forward(50)
 
 
 
