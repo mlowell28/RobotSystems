@@ -121,12 +121,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
         
         print()
         start_send = "send_data"
-        send_bus.write(start_send)
+        send_bus.write(start_send.encode('utf-8'))
 
         time.sleep(20)
 
         stop_send = "stop_sending_data"
-        send_bus.write(stop_send)
+        send_bus.write(stop_send.encode('utf-8'))
 
         time.sleep(20)
 
